@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  nameEn    String
+  nameRo    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dishes Dish[]
+  admins Admin[]
+}
+
+model Dish {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  nameEn        String
+  nameRo        String
+  descriptionEn String?
+  descriptionRo String?
+
+  price    Float
+  category String
+
+  // Macros (required by Romanian law)
+  kcal    Int
+  protein Float
+  carbs   Float
+  fat     Float
+  fiber   Float?
+
+  // Dietary flags
+  allergens    String[] // Allergen enum values stored as strings
+  isVegan      Boolean  @default(false)
+  isVegetarian Boolean  @default(false)
+  isAvailable  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([isAvailable])
+}
+
+model Admin {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+}
