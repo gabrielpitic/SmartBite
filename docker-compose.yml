@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: smartbite-webapp
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,6 +14,9 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - smartbite-network
+      - proxy-network
 
   postgres:
     image: postgres:16-alpine
@@ -30,6 +34,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - smartbite-network
 
   redis:
     image: redis:7-alpine
@@ -41,7 +47,16 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
+    networks:
+      - smartbite-network
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  smartbite-network:
+    driver: bridge
+  proxy-network:
+    external: true
+    name: proxy-network
