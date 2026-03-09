@@ -66,7 +66,7 @@ function chunkText(text: string): string[] {
   return chunks;
 }
 
-function salvageJSON(raw: string): unknown[] {
+function salvageJSON(raw: string): object[] {
   let clean = raw.replace(/```json|```/g, "").trim();
   if (!clean.startsWith("[")) {
     const start = clean.indexOf("[");

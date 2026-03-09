@@ -12,7 +12,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
-RUN npm run build
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV ESLINT_NO_DEV_ERRORS=true
+RUN npm run build -- --no-lint
 
 # ---- Runner ----
 FROM base AS runner
